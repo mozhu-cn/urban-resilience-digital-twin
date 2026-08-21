@@ -1,7 +1,7 @@
 # A Physics-Guided Digital Twin Framework for Urban Infrastructure Resilience Assessment under Extreme Flooding: Integrating Terrain-Informed Flood Simulation, Delayed Cascading Failures, and Adaptive Restoration
 
 **Authors:** Zheyu Huang\*, Yujia Huang
-(\*Corresponding author: zheyu.huang@example.edu)
+(\*Corresponding author: shuimoqingzhu-cn@qq.com)
 
 ---
 
@@ -250,6 +250,10 @@ This study proposed a high-resolution digital twin framework for evaluating urba
 Methodologically, the framework bridges physical flood dynamics, infrastructure dependency modeling, and recovery optimization within a unified computational environment. Practically, it provides evidence-based support for resilience planning by identifying critical vulnerabilities, evaluating cascading impacts, and testing adaptive intervention strategies. The proposed approach provides a foundation for future intelligent disaster management systems that combine physical simulation, network science, and adaptive decision-making.
 
 ---
+
+## Acknowledgements
+
+The authors declare that this research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors. The authors thank the open-data communities of OpenStreetMap and Open-Meteo for providing the geographic and elevation data used in this study.
 
 ## Data Availability
 

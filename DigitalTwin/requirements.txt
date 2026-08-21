@@ -1,0 +1,11 @@
+# Urban Resilience Digital Twin - runtime dependencies
+# Python 3.10+ recommended
+numpy>=1.24
+scipy>=1.10
+pandas>=1.5
+networkx>=3.0
+numba>=0.58
+osmnx>=1.8
+plotly>=5.15
+requests>=2.28
+matplotlib>=3.7        # required by the experiments module only

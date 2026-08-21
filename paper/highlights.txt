@@ -1,0 +1,7 @@
+Highlights
+
+- A physics-guided digital twin framework is proposed for dynamic urban flood resilience assessment.
+- A terrain-informed cellular flood model captures nonlinear hazard evolution under extreme rainfall.
+- Time-delayed cascading failures are modeled through backup-energy depletion in interdependent networks.
+- Adaptive restoration optimization improves recovery decisions under flood-constrained transportation.
+- The framework is validated through a case study of Miyazaki City, Japan, with sensitivity analysis.

@@ -1,0 +1,18 @@
+# Normalize line endings: text files use LF in the repository
+* text=auto
+
+*.py text eol=lf
+*.md text eol=lf
+*.tex text eol=lf
+*.bib text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.ps1 text eol=crlf
+
+# binary artifacts
+*.png binary
+*.pkl binary
+*.docx binary
+*.exe binary

@@ -1,0 +1,40 @@
+# ============================================================
+# Urban Resilience Digital Twin — repository ignore rules
+# ============================================================
+
+# --- local tooling (not part of the paper) ---
+tools/vendor/
+tools/tmp/
+
+# --- historical drafts and legacy caches ---
+legacy/
+paper/docx_archive/
+
+# --- osmnx http response cache (regenerated on demand) ---
+DigitalTwin/cache/
+
+# --- personal/editable copies ---
+paper/manuscript.docx
+
+# --- Python artifacts ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- editor / OS noise ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- logs ---
+results/experiment_log.txt
+
+# --- tooling artifacts (reference-check caches, raw screenshots) ---
+results/doi_*.json
+paper/figures/raw_*.png
+
+# --- note: DigitalTwin/miyazaki_ultimate_cache.pkl IS intentionally
+# --- tracked (offline reproducibility); do not add *.pkl here.

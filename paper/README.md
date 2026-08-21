@@ -27,10 +27,12 @@ Or use an online service (Overleaf): upload `manuscript.tex`,
 
 ### Before submission, complete
 
-- [x] Author names (Zheyu Huang, Yujia Huang) — add affiliations and emails
-- [ ] Journal selection and `\journal{}` field
-- [ ] Funding information in Acknowledgements
-- [x] Data availability statement (drafted; insert repository DOI/link)
+- [x] Author names (Zheyu Huang, Yujia Huang) and affiliation (Independent Researcher, China)
+- [x] Target journal: International Journal of Disaster Risk Reduction (IJDRR)
+- [x] Funding: none (no-grant statement in Acknowledgements)
+- [x] Data availability statement (repository link included)
+- [x] Highlights compliant with IJDRR (<= 85 characters each)
+- [ ] Upload to Elsevier Editorial System (EES) / Editorial Manager
 - [ ] Results tables/figures regenerated from `results/` (see below)
 
 ## Figures

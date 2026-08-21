@@ -1,0 +1,1350 @@
+<div class="frontmatter">
+<div class="highlights">
+<p>A physics-guided digital twin framework for urban flood resilience
+assessment.</p>
+<p>Terrain-informed CA flood modeling captures nonlinear hazard
+evolution.</p>
+<p>Time-delayed cascading failures emerge from backup-energy
+depletion.</p>
+<p>Adaptive restoration optimization supports flood-constrained recovery
+decisions.</p>
+<p>A Miyazaki City case study validates the framework with sensitivity
+analysis.</p>
+</div>
+<div class="keyword">
+<p>Urban resilience ,Digital twin ,Cellular automata flood simulation
+,Interdependent infrastructure networks ,Cascading failures ,Adaptive
+restoration ,Critical infrastructure protection</p>
+</div>
+</div>
+<h1 id="sec:intro">Introduction</h1>
+<p>Climate change has intensified the frequency and severity of extreme
+precipitation events, making urban flooding one of the most significant
+threats to sustainable urban development <span class="citation"
+data-cites="ipcc2012srex">[1]</span>. Unlike conventional natural
+hazards that affect isolated components, extreme floods increasingly
+interact with interconnected urban infrastructure systems, including
+power supply networks, communication networks, transportation systems,
+and water management facilities <span class="citation"
+data-cites="rinaldi2001identifying">[2]</span>. The increasing
+dependence among these systems introduces complex failure propagation
+mechanisms, where localized physical damage can trigger large-scale
+cascading disruptions across multiple infrastructure domains <span
+class="citation"
+data-cites="buldyrev2010catastrophic gao2011robustness">[3,4]</span>.</p>
+<p>Critical infrastructure systems (CIS) are characterized by strong
+physical and functional interdependencies. For example, communication
+networks rely on continuous power supply, while emergency response
+activities require functioning transportation systems <span
+class="citation" data-cites="ouyang2014review">[5]</span>. Consequently,
+failures occurring in one infrastructure layer may propagate into other
+layers through dependency relationships, potentially leading to
+nonlinear system degradation and prolonged recovery periods <span
+class="citation" data-cites="ouyang2012three">[6]</span>. Therefore,
+accurately evaluating infrastructure resilience requires not only
+identifying vulnerable components but also reproducing the dynamic
+interactions among hazards, infrastructure failures, and recovery
+interventions <span class="citation"
+data-cites="bruneau2003framework chang2004measuring">[7,8]</span>.</p>
+<p>Existing studies have investigated infrastructure vulnerability and
+cascading failures from various perspectives. Complex network theory and
+percolation-based approaches have provided valuable insights into the
+structural robustness of interdependent networks <span class="citation"
+data-cites="albert2002statistical newman2003structure gao2011robustness">[4,9,10]</span>.
+However, many existing models simplify disaster impacts as instantaneous
+node failures or probabilistic disturbances, without explicitly
+considering the underlying physical processes that generate
+infrastructure damage. Such simplifications may result in inaccurate
+estimation of failure timing and system-level resilience <span
+class="citation" data-cites="ouyang2012time">[11]</span>.</p>
+<p>One major limitation concerns the representation of flood hazards.
+Many urban flood resilience studies adopt simplified approaches such as
+bathtub models, uniform water-level assumptions, or distance-based
+hazard indicators. Although computationally efficient, these approaches
+neglect the influence of heterogeneous urban topography, surface runoff
+pathways, and nonlinear drainage limitations <span class="citation"
+data-cites="bates2010simple">[12]</span>. In reality, flood propagation
+is governed by complex interactions among rainfall intensity, terrain
+gradients, drainage capacity, and local accumulation processes <span
+class="citation"
+data-cites="guidolin2016weighted ghimire2013formulation">[13,14]</span>.
+Without a physically informed hydrodynamic representation, it remains
+difficult to identify critical transition points where urban flooding
+rapidly evolves from a manageable condition into a catastrophic
+state.</p>
+<p>Another limitation lies in the temporal characteristics of
+infrastructure failure. Conventional cascading failure models frequently
+assume immediate failure propagation after dependency loss <span
+class="citation" data-cites="buldyrev2010catastrophic">[3]</span>.
+However, practical infrastructure systems often contain redundancy
+mechanisms that provide temporary operational capability. For instance,
+communication facilities are commonly equipped with backup batteries or
+uninterrupted power supply systems. When external power sources fail,
+these facilities may continue operating for a limited period before
+complete shutdown  <span class="citation"
+data-cites="panteli2015grid">[15]</span>. This delayed failure mechanism
+introduces an important resilience buffer, creating a temporal window
+for emergency intervention. Nevertheless, the impact of such
+time-dependent degradation processes remains insufficiently explored in
+existing interdependent infrastructure models.</p>
+<p>Furthermore, many current digital twin and resilience assessment
+frameworks primarily focus on damage simulation while neglecting the
+active role of emergency restoration <span class="citation"
+data-cites="batty2018digital grieves2017digital tao2019digital">[16–18]</span>.
+In real disaster scenarios, recovery operations occur within rapidly
+changing physical environments. Floodwaters may dynamically block
+transportation networks, alter travel accessibility, and increase
+response delays <span class="citation"
+data-cites="laporte2009fifty">[19]</span>. Therefore, emergency dispatch
+decisions should not rely solely on static road networks or geographical
+distances. Instead, restoration strategies should incorporate real-time
+environmental conditions and adaptive routing mechanisms to capture the
+interaction between disaster evolution and human intervention <span
+class="citation" data-cites="dibaldassarre2013socio">[20]</span>.</p>
+<p>To address these limitations, this study develops a high-resolution
+four-dimensional digital twin framework that integrates physical flood
+dynamics, infrastructure interdependency, and adaptive restoration
+processes within a unified simulation environment. The framework
+combines a terrain-informed cellular automata (CA) flood propagation
+model with interdependent network failure modeling and dynamic emergency
+dispatch optimization. Compared with previous studies focusing
+separately on flood simulation, infrastructure vulnerability, or
+restoration planning, the proposed approach enables closed-loop analysis
+of hazard evolution, cascading failures, and recovery actions.</p>
+<p>The main contributions of this study are summarized as follows:</p>
+<ul>
+<li><p><strong>High-resolution flood dynamics modeling.</strong> A
+terrain-informed cellular automata flood propagation model is developed
+using high-resolution elevation data. The model incorporates
+heterogeneous drainage capacity and subsurface storage limitations to
+reproduce nonlinear urban flood evolution and identify critical flooding
+transition points.</p></li>
+<li><p><strong>Time-delayed cascading failure mechanism.</strong> A
+coupled power–communication infrastructure model is proposed by
+integrating flood-induced physical damage with backup-battery depletion
+dynamics. This approach captures delayed failure propagation and reveals
+the temporal characteristics of cascading disruptions.</p></li>
+<li><p><strong>Dynamic restoration optimization under flood
+constraints.</strong> A human-in-the-loop restoration mechanism is
+introduced by coupling flood-dependent road accessibility, dynamic
+shortest-path routing, and multi-objective emergency prioritization. The
+proposed strategy evaluates how adaptive interventions influence
+infrastructure resilience during disaster evolution.</p></li>
+</ul>
+<p>The remainder of this paper is organized as follows. Section <a
+href="#sec:rw" data-reference-type="ref" data-reference="sec:rw">2</a>
+reviews related studies on digital twins, flood simulation,
+infrastructure interdependency, and resilience assessment. Section <a
+href="#sec:method" data-reference-type="ref"
+data-reference="sec:method">3</a> presents the proposed digital twin
+framework and mathematical formulations. Section <a href="#sec:case"
+data-reference-type="ref" data-reference="sec:case">4</a> introduces the
+case study and experimental design. Section <a href="#sec:results"
+data-reference-type="ref" data-reference="sec:results">5</a> discusses
+simulation results and comparative analyses. Section <a
+href="#sec:discussion" data-reference-type="ref"
+data-reference="sec:discussion">6</a> provides further discussion of
+practical implications and limitations. Finally, Section <a
+href="#sec:conclusion" data-reference-type="ref"
+data-reference="sec:conclusion">7</a> concludes the study and highlights
+future research directions.</p>
+<h1 id="sec:rw">Related Work</h1>
+<h2 id="digital-twins-in-urban-disaster-management">Digital Twins in
+Urban Disaster Management</h2>
+<p>Digital twin technology has emerged as an effective approach for
+representing complex urban systems by integrating physical entities,
+sensing data, computational models, and decision-support
+mechanisms <span class="citation"
+data-cites="grieves2017digital tao2019digital">[17,18]</span>. In recent
+years, urban digital twins have been increasingly applied in
+infrastructure monitoring, smart city management, and disaster response
+due to their capability to provide continuous system-state
+representation and scenario-based analysis <span class="citation"
+data-cites="batty2018digital">[16]</span>.</p>
+<p>Existing studies have demonstrated the potential of digital twins in
+improving situational awareness during urban emergencies. By integrating
+geographic information systems (GIS), Internet of Things (IoT)
+observations, and simulation models, digital twin platforms can support
+real-time visualization and decision-making for complex urban
+environments  <span class="citation"
+data-cites="haklay2008openstreetmap">[21]</span>. However, many current
+urban digital twin applications primarily focus on data integration,
+visualization, and asset management, while the dynamic coupling between
+hazard evolution and infrastructure response remains insufficiently
+explored. For flood resilience assessment, an effective digital twin
+should not only reproduce the spatial distribution of hazards but also
+capture the temporal interactions between environmental processes,
+infrastructure degradation, and recovery actions.</p>
+<h2 id="flood-simulation-and-urban-flood-dynamics-modeling">Flood
+Simulation and Urban Flood Dynamics Modeling</h2>
+<p>Urban flood simulation has been widely investigated using
+hydrodynamic models, cellular automata approaches, and hybrid modeling
+techniques. Traditional hydrodynamic models based on shallow-water
+equations (SWE) can provide physically meaningful flood propagation
+simulations  <span class="citation"
+data-cites="bates2010simple">[12]</span>; however, they often require
+detailed hydraulic parameters and considerable computational resources,
+limiting their application in large-scale real-time digital twin
+environments.</p>
+<p>Cellular automata-based flood models have attracted increasing
+attention due to their computational efficiency and capability of
+representing spatially distributed flood evolution <span
+class="citation"
+data-cites="ghimire2013formulation guidolin2016weighted issermann2020efficient">[13,14,22]</span>.
+By defining local transition rules among neighboring cells, CA models
+can effectively simulate inundation propagation, water accumulation, and
+terrain-driven flow behaviors. However, existing CA-based approaches are
+often developed independently from infrastructure systems and mainly
+focus on flood extent prediction rather than disaster-induced functional
+degradation. Consequently, there remains a need for integrated
+approaches that couple flood propagation processes with infrastructure
+functional states within a unified simulation framework.</p>
+<h2
+id="cascading-failure-modeling-in-interdependent-infrastructure-networks">Cascading
+Failure Modeling in Interdependent Infrastructure Networks</h2>
+<p>Modern cities rely on highly interconnected infrastructure networks,
+including power systems, communication networks, transportation systems,
+and water supply systems <span class="citation"
+data-cites="rinaldi2001identifying">[2]</span>. Such interdependencies
+improve operational efficiency but also increase vulnerability to
+cascading failures during extreme events <span class="citation"
+data-cites="buldyrev2010catastrophic gao2011robustness">[3,4]</span>.</p>
+<p>Previous studies have developed various network-based approaches to
+analyze cascading failures, including graph theory models, percolation
+theory, agent-based simulations, and reliability-based approaches  <span
+class="citation" data-cites="ouyang2014review">[5]</span>. These methods
+have significantly improved the understanding of infrastructure
+vulnerability under disruptive events. However, several limitations
+remain. First, many existing studies assume that failures occur
+instantaneously after component damage, neglecting temporal delays
+associated with degradation, backup operation, and maintenance
+response <span class="citation" data-cites="ouyang2012time">[11]</span>.
+Second, infrastructure networks are frequently analyzed independently,
+while real urban systems exhibit complex cross-network
+dependencies <span class="citation"
+data-cites="ouyang2012three">[6]</span>. Third, most existing models
+focus on failure propagation but provide limited integration with
+recovery decision-making processes.</p>
+<h2
+id="resilience-assessment-and-adaptive-recovery-optimization">Resilience
+Assessment and Adaptive Recovery Optimization</h2>
+<p>Urban resilience has evolved from a concept focusing on resistance
+and robustness toward a broader perspective incorporating absorption,
+adaptation, and recovery capabilities <span class="citation"
+data-cites="holling1973resilience bruneau2003framework">[7,23]</span>.
+Existing resilience assessment methods commonly use performance-based
+indicators, resilience curves, vulnerability indices, and recovery
+trajectories to quantify system performance during disruptive
+events <span class="citation"
+data-cites="chang2004measuring ouyang2012three">[6,8]</span>.</p>
+<p>Although these approaches provide valuable evaluation frameworks,
+recovery planning is often treated as an independent optimization
+problem after disaster occurrence <span class="citation"
+data-cites="ouyang2012time">[11]</span>. In reality, restoration
+decisions should continuously adapt to evolving system conditions,
+resource limitations, accessibility constraints, and infrastructure
+criticality  <span class="citation"
+data-cites="laporte2009fifty">[19]</span>. Recent studies have explored
+optimization-based recovery strategies using heuristic algorithms and
+network centrality analysis. Nevertheless, many approaches rely on
+predefined priorities and lack real-time interaction with hazard
+evolution models. Integrating adaptive restoration optimization into a
+dynamic digital twin environment remains an open research direction.</p>
+<h2 id="research-gaps-and-motivation">Research Gaps and Motivation</h2>
+<p>Based on the above review, three major research gaps are identified.
+First, existing urban digital twin studies mainly emphasize data
+integration and visualization, while insufficient attention has been
+given to coupling physical hazard evolution with infrastructure
+functional dynamics. Second, current flood simulation and infrastructure
+resilience models are often developed separately, limiting their
+capability to represent flood-induced cascading failures across
+interdependent urban systems. Third, existing recovery optimization
+methods generally rely on static strategies and do not dynamically adapt
+to changing disaster conditions. To address these limitations, this
+study develops a physics-guided spatiotemporal digital twin framework
+that integrates flood propagation modeling, interdependent
+infrastructure failure simulation, and adaptive restoration
+optimization.</p>
+<h1 id="sec:method">Methodology</h1>
+<h2 id="overview-of-the-proposed-digital-twin-framework">Overview of the
+Proposed Digital Twin Framework</h2>
+<p>This study develops a physics-informed high-resolution digital twin
+framework for assessing urban infrastructure resilience under extreme
+flooding events. The proposed framework integrates three coupled
+components: (1) a terrain-driven flood evolution model based on cellular
+automata, (2) an interdependent infrastructure failure model
+incorporating time-delayed cascading effects, and (3) a dynamic
+restoration optimization module considering flood-induced transportation
+constraints.</p>
+<p>The overall simulation framework follows a closed-loop
+disaster-response process. At each simulation cycle, rainfall forcing is
+first introduced into the physical environment. The CA-based flood model
+then updates the spatial flood distribution by considering terrain
+characteristics, water exchange among neighboring cells, and
+heterogeneous drainage responses. The resulting flood field determines
+the physical status of infrastructure components, including power
+substations and communication facilities. Subsequently, cascading
+failure dynamics are calculated through dependency relationships between
+infrastructure layers. Finally, emergency restoration decisions are
+generated according to current network conditions and dynamic
+transportation accessibility. The complete interaction process is
+expressed as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Rainfall</mtext><mo>→</mo><mtext mathvariant="normal">Flood evolution</mtext><mo>→</mo><mtext mathvariant="normal">Infrastructure damage</mtext><mo>→</mo><mtext mathvariant="normal">Cascading failure</mtext><mo>→</mo><mtext mathvariant="normal">Dynamic restoration</mtext><mo>→</mo><mtext mathvariant="normal">Resilience update</mtext><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:loop}
+\text{Rainfall} \rightarrow \text{Flood evolution} \rightarrow
+\text{Infrastructure damage} \rightarrow \text{Cascading failure}
+\rightarrow \text{Dynamic restoration} \rightarrow
+\text{Resilience update}.
+\end{equation}</annotation></semantics></math></p>
+<p>This multi-layer coupling enables the proposed digital twin to
+reproduce not only disaster-induced physical degradation but also the
+adaptive responses of urban systems during recovery.</p>
+<h2 id="terrain-reconstruction-and-physical-environment-model">Terrain
+Reconstruction and Physical Environment Model</h2>
+<p>To capture the influence of urban micro-topography on flood
+propagation, the study area is discretized into a two-dimensional
+regular cellular grid:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">𝑪</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>C</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>N</mi><mi>x</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>N</mi><mi>y</mi></msub><mo stretchy="false" form="postfix">}</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:grid}
+\mathbf{C} = \{C(i,j) \mid i=1,\dots,N_x,\ j=1,\dots,N_y\},
+\end{equation}</annotation></semantics></math> where each cell
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">C(i,j)</annotation></semantics></math>
+represents a spatial unit with horizontal resolutions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">\Delta x</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">\Delta y</annotation></semantics></math>.
+In the case study the computational domain consists of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mi>x</mi></msub><mo>=</mo><msub><mi>N</mi><mi>y</mi></msub><mo>=</mo><mn>650</mn></mrow><annotation encoding="application/x-tex">N_x=N_y=650</annotation></semantics></math>
+cells, resulting in 422<span>,</span>500 spatial cells.</p>
+<p>The original terrain elevation data are reconstructed into a
+continuous elevation matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="bold-italic">𝒁</mi><mn>0</mn></msub><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><msub><mi>N</mi><mi>x</mi></msub><mo>×</mo><msub><mi>N</mi><mi>y</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex">\mathbf{Z}_0 \in \mathbb{R}^{N_x\times N_y}</annotation></semantics></math>
+through spatial interpolation. To reduce interpolation noise while
+preserving important terrain gradients, a Gaussian smoothing operator is
+applied:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Z</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>G</mi><mi>σ</mi></msub><mo>*</mo><msub><mi>Z</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:smooth}
+Z(i,j) = (G_\sigma * Z_0)(i,j),
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>G</mi><mi>σ</mi></msub><annotation encoding="application/x-tex">G_\sigma</annotation></semantics></math>
+denotes the Gaussian kernel and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>
+controls the smoothing intensity
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\sigma=0.8</annotation></semantics></math>
+in this study).</p>
+<p>Local terrain gradients determine the preferential direction of
+surface water movement. The spatial gradient is estimated using
+second-order central differences, and the local slope magnitude is
+calculated as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msqrt><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>∂</mi><mi>Z</mi></mrow><mrow><mi>∂</mi><mi>x</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>+</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>∂</mi><mi>Z</mi></mrow><mrow><mi>∂</mi><mi>y</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow></msqrt><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:slope}
+S(i,j) = \sqrt{\left(\frac{\partial Z}{\partial x}\right)^2 +
+\left(\frac{\partial Z}{\partial y}\right)^2},
+\end{equation}</annotation></semantics></math> which is normalized to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>S</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\hat{S}(i,j)\in[0,1]</annotation></semantics></math>
+by min–max scaling. The normalized slope field drives the spatial
+heterogeneity of drainage capacity and subsurface storage described
+below.</p>
+<h2
+id="terrain-informed-cellular-flood-propagation-model">Terrain-Informed
+Cellular Flood Propagation Model</h2>
+<h3 id="model-principles">Model principles</h3>
+<p>Full numerical solutions of the shallow water equations provide high
+physical accuracy but become computationally expensive for large-scale
+urban simulations with fine spatial resolution <span class="citation"
+data-cites="bates2010simple">[12]</span>. This study therefore adopts a
+cellular automata-based flood propagation approximation that follows
+three principles: (i) local mass conservation between neighboring cells;
+(ii) gravity-driven water redistribution according to hydraulic head
+differences; and (iii) adaptive drainage response constrained by local
+environmental characteristics <span class="citation"
+data-cites="ghimire2013formulation guidolin2016weighted">[13,14]</span>.</p>
+<h3 id="rainfall-input-and-hydraulic-head">Rainfall input and hydraulic
+head</h3>
+<p>The rainfall intensity is converted into water depth increments:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mo>*</mo></msup><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>W</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:rain}
+W^{*}(i,j,t) = W(i,j,t) + R(t),
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">W(i,j,t)</annotation></semantics></math>
+is the surface water depth and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R(t)</annotation></semantics></math>
+the rainfall depth increment per time step. The hydraulic head of each
+cell is:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>Z</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msup><mi>W</mi><mo>*</mo></msup><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:head}
+H(i,j,t) = Z(i,j) + W^{*}(i,j,t).
+\end{equation}</annotation></semantics></math></p>
+<h3 id="hydraulic-flux-exchange-between-cells">Hydraulic flux exchange
+between cells</h3>
+<p>For each neighboring direction
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>∈</mo><mi mathvariant="normal">Ω</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mrow><mi mathvariant="normal">N</mi><mo mathvariant="normal">,</mo><mi mathvariant="normal">S</mi><mo mathvariant="normal">,</mo><mi mathvariant="normal">E</mi><mo mathvariant="normal">,</mo><mi mathvariant="normal">W</mi></mrow><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">d \in \Omega = \{\mathrm{N,S,E,W}\}</annotation></semantics></math>,
+the positive hydraulic head difference is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>H</mi><mi>d</mi><mo>+</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.167em"></mspace><mi>H</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>H</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta H_d^{+}(i,j,t) = \max(0,\, H(i,j,t) - H_d(i,j,t))</annotation></semantics></math>,
+and the total available gradient is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>H</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mrow><mi>d</mi><mo>∈</mo><mi mathvariant="normal">Ω</mi></mrow></msub><mi mathvariant="normal">Δ</mi><msubsup><mi>H</mi><mi>d</mi><mo>+</mo></msubsup></mrow><annotation encoding="application/x-tex">\Delta H_{\mathrm{total}} =
+\sum_{d\in\Omega}\Delta H_d^{+}</annotation></semantics></math>. The
+maximum transferable water volume is constrained by the flux limitation
+coefficient
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Q</mi><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">m</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>α</mi><mspace width="0.167em"></mspace><msup><mi>W</mi><mo>*</mo></msup><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:qlim}
+Q_{\mathrm{lim}}(i,j,t) = \alpha\, W^{*}(i,j,t),
+\end{equation}</annotation></semantics></math> and the directional flux
+is allocated proportionally to the head differences:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Q</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mstyle displaystyle="true"><mfrac><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>H</mi><mi>d</mi><mo>+</mo></msubsup></mrow><mrow><mi mathvariant="normal">Δ</mi><msub><mi>H</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow></msub></mrow></mfrac></mstyle><mspace width="0.167em"></mspace><msub><mi>Q</mi><mrow><mi mathvariant="normal">l</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">m</mi></mrow></msub><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mi mathvariant="normal">Δ</mi><msub><mi>H</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow></msub><mo>&gt;</mo><mn>0</mn><mo>,</mo></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mi mathvariant="normal">Δ</mi><msub><mi>H</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow></msub><mo>=</mo><mn>0</mn><mi>.</mi></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:qdir}
+Q_d(i,j,t) =
+\begin{cases}
+\dfrac{\Delta H_d^{+}}{\Delta H_{\mathrm{total}}}\, Q_{\mathrm{lim}},
+&amp; \Delta H_{\mathrm{total}} &gt; 0,\\[4pt]
+0, &amp; \Delta H_{\mathrm{total}} = 0.
+\end{cases}
+\end{equation}</annotation></semantics></math> According to the
+Courant–Friedrichs–Lewy (CFL) stability condition, the outflow
+coefficient must satisfy
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mi>α</mi><mo>≤</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">4\alpha \le 1</annotation></semantics></math>;
+we conservatively set
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.12</mn></mrow><annotation encoding="application/x-tex">\alpha = 0.12</annotation></semantics></math>.</p>
+<h3 id="drainage-response-and-storage-saturation">Drainage response and
+storage saturation</h3>
+<p>Urban drainage capability is spatially heterogeneous. The effective
+drainage rate is defined as:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>D</mi><mn>0</mn></msub><mspace width="0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>η</mi><mspace width="0.167em"></mspace><mover><mi>S</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:drain}
+D(i,j) = D_0\,\bigl(1 + \eta\,\hat{S}(i,j)\bigr),
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mn>0</mn></msub><annotation encoding="application/x-tex">D_0</annotation></semantics></math>
+is the basic drainage capacity and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>η</mi><annotation encoding="application/x-tex">\eta</annotation></semantics></math>
+the terrain-dependent response intensity. The available subsurface
+storage capacity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">K(i,j,t)</annotation></semantics></math>
+decreases as water is drained, and the actual drainage volume is
+constrained by water availability, drainage rate, and remaining storage:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">t</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><msup><mi>W</mi><mo>*</mo></msup><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="0.222em"></mspace><mi>D</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><mi mathvariant="normal">Δ</mi><mi>t</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:dact}
+D_{\mathrm{act}}(i,j,t) =
+\min\!\bigl(W^{*}(i,j,t),\ D(i,j)\,\Delta t,\ K(i,j,t)\bigr),
+\end{equation}</annotation></semantics></math> with the storage
+evolution
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.222em"></mspace><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>D</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">t</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:storage}
+K(i,j,t+\Delta t) = \max\!\bigl(0,\ K(i,j,t) - D_{\mathrm{act}}(i,j,t)\bigr).
+\end{equation}</annotation></semantics></math> When
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">K(i,j,t)=0</annotation></semantics></math>,
+the drainage system reaches saturation and additional rainfall
+contributes directly to surface flooding, generating a nonlinear tipping
+point in flood evolution.</p>
+<h3 id="water-depth-evolution">Water depth evolution</h3>
+<p>Considering incoming flux, outgoing flux, and drainage removal, the
+water depth update equation is:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>W</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><munder><mo>∑</mo><mi>d</mi></munder><msubsup><mi>Q</mi><mi>d</mi><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi></mrow></msubsup><mo>+</mo><munder><mo>∑</mo><mi>d</mi></munder><msubsup><mi>Q</mi><mi>d</mi><mrow><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi></mrow></msubsup><mo>−</mo><msub><mi>D</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">t</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:update}
+W(i,j,t+\Delta t) = W(i,j,t) - \sum_{d} Q_d^{\mathrm{out}} +
+\sum_{d} Q_d^{\mathrm{in}} - D_{\mathrm{act}}(i,j,t),
+\end{equation}</annotation></semantics></math> which ensures local mass
+conservation while allowing efficient large-scale flood evolution
+simulation.</p>
+<h2
+id="time-delayed-cascading-failure-model-in-interdependent-networks">Time-Delayed
+Cascading Failure Model in Interdependent Networks</h2>
+<h3 id="interdependent-network-representation">Interdependent network
+representation</h3>
+<p>Urban critical infrastructure systems are modeled as interdependent
+multi-layer networks consisting of a power supply layer
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>G</mi><mi>p</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>P</mi><mo>,</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G_p = (P, E_p)</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>p</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>p</mi><mi>M</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">P = \{p_1,\dots,p_M\}</annotation></semantics></math>
+denotes power substations, and a communication layer
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>G</mi><mi>c</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>C</mi><mo>,</mo><msub><mi>E</mi><mi>c</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G_c = (C, E_c)</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>c</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>c</mi><mi>N</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">C = \{c_1,\dots,c_N\}</annotation></semantics></math>
+denotes communication base stations. A dependency mapping
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">p</mi></mrow></msub><mo>:</mo><mi>C</mi><mo>→</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">f_{\mathrm{dep}}: C \rightarrow P</annotation></semantics></math>
+assigns each communication node to one upstream power node. Unlike
+purely geographical dependency assumptions, dependencies are established
+according to network accessibility:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">p</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">arg</mi><mo>&#8289;</mo></mrow><munder><mi mathvariant="normal">min</mi><mrow><msub><mi>p</mi><mi>j</mi></msub><mo>∈</mo><mi>P</mi></mrow></munder><mspace width="0.167em"></mspace><msub><mrow><mi mathvariant="normal">D</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi></mrow><mi mathvariant="script">𝒢</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><msub><mi>p</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:dep}
+f_{\mathrm{dep}}(c_i) = \arg\min_{p_j \in P}\,
+\mathrm{Dist}_{\mathcal{G}}(c_i, p_j),
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">D</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi></mrow><mi mathvariant="script">𝒢</mi></msub><annotation encoding="application/x-tex">\mathrm{Dist}_{\mathcal{G}}</annotation></semantics></math>
+is the shortest infrastructure connection distance.</p>
+<h3
+id="flood-induced-physical-failure-of-power-infrastructure">Flood-induced
+physical failure of power infrastructure</h3>
+<p>For each power substation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>j</mi></msub><annotation encoding="application/x-tex">p_j</annotation></semantics></math>,
+the local flood depth
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>W</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><msub><mi>p</mi><mi>j</mi></msub></msub><mo>,</mo><msub><mi>y</mi><msub><mi>p</mi><mi>j</mi></msub></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">W_p(p_j,t) = W(x_{p_j}, y_{p_j}, t)</annotation></semantics></math>
+is sampled from the hydrodynamic field. The operational state
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">S_p(p_j,t)\in\{0,1\}</annotation></semantics></math>
+follows a threshold mechanism:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>W</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><msub><mi>W</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">h</mi></mrow></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>W</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><msub><mi>W</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">h</mi></mrow></msub><mo>,</mo></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:pfail}
+S_p(p_j,t) =
+\begin{cases}
+1, &amp; W_p(p_j,t) \le W_{\mathrm{th}},\\
+0, &amp; W_p(p_j,t) &gt; W_{\mathrm{th}},
+\end{cases}
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">h</mi></mrow></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">W_{\mathrm{th}} = 0.5</annotation></semantics></math> m
+is the flood tolerance threshold of substations. Physical flood damage
+is assumed irreversible without external restoration intervention:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><msub><mi>S</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">S_p(p_j,t+\Delta t) \le S_p(p_j,t)</annotation></semantics></math>
+unless a repair action is completed.</p>
+<h3
+id="time-delayed-failure-propagation-through-backup-energy">Time-delayed
+failure propagation through backup energy</h3>
+<p>A key feature of urban infrastructure resilience is that dependency
+failure does not always propagate instantaneously. Communication nodes
+are equipped with backup batteries whose initial capacity follows
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>B</mi><mi mathvariant="normal">min</mi></msub><mo>,</mo><msub><mi>B</mi><mi mathvariant="normal">max</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">B(c_i,0) \sim U(B_{\min}, B_{\max})</annotation></semantics></math>
+(here 3–5 h). When the associated power node fails, battery depletion
+begins:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mspace width="0.222em"></mspace><mi>B</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>λ</mi><mspace width="0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>S</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">p</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mspace width="0.167em"></mspace><mi mathvariant="normal">Δ</mi><mi>t</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:battery}
+B(c_i,t+\Delta t) =
+\max\!\left[0,\ B(c_i,t) -
+\lambda\,\bigl(1 - S_p(f_{\mathrm{dep}}(c_i),t)\bigr)\,\Delta t\right],
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
+is the normalized battery consumption rate. The communication node
+operational state is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>c</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">S_c(c_i,t) = 1</annotation></semantics></math>
+if
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">B(c_i,t) &gt; 0</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
+otherwise. This formulation introduces a temporal buffer between
+physical damage and functional failure, enabling the model to capture
+delayed cascading effects.</p>
+<h2
+id="dynamic-restoration-optimization-under-flood-constrained-transportation">Dynamic
+Restoration Optimization under Flood-Constrained Transportation</h2>
+<h3 id="flood-dependent-dynamic-road-network">Flood-dependent dynamic
+road network</h3>
+<p>The urban road system is modeled as a dynamic weighted graph
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>G</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo>,</mo><mi>E</mi><mo>,</mo><mi>L</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G_r(t) = (V, E, L(t))</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">L(t)</annotation></semantics></math>
+is the time-dependent travel cost. For a road segment
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mrow><mi>u</mi><mi>v</mi></mrow></msub><annotation encoding="application/x-tex">e_{uv}</annotation></semantics></math>,
+the flood condition is sampled at its geometric center,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mrow><mi>u</mi><mi>v</mi></mrow></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">W_r(e_{uv},t)</annotation></semantics></math>,
+and the dynamic travel impedance is:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>L</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>W</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mrow><mi>u</mi><mi>v</mi></mrow></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><msub><mi>W</mi><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>,</mo></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mi>∞</mi><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>W</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>e</mi><mrow><mi>u</mi><mi>v</mi></mrow></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><msub><mi>W</mi><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>,</mo></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:road}
+L(u,v,t) =
+\begin{cases}
+L_0(u,v), &amp; W_r(e_{uv},t) \le W_{\mathrm{road}},\\
+\infty, &amp; W_r(e_{uv},t) &gt; W_{\mathrm{road}},
+\end{cases}
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>=</mo><mn>0.3</mn></mrow><annotation encoding="application/x-tex">W_{\mathrm{road}} = 0.3</annotation></semantics></math> m
+is the maximum safe water depth for emergency vehicles.</p>
+<h3 id="multi-objective-restoration-priority">Multi-objective
+restoration priority</h3>
+<p>Restoring a substation with many dependent communication nodes can
+recover more network functionality, while nodes approaching battery
+depletion require urgent intervention. A restoration utility function is
+therefore defined:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>∈</mo><mi>C</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow></munder><msub><mi>S</mi><mi>c</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mfrac><mi>γ</mi><mrow><mi>B</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>ϵ</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:utility}
+U(p_j,t) = \sum_{c_i \in C(p_j)}
+S_c(c_i,t)\left(1 + \frac{\gamma}{B(c_i,t)+\epsilon}\right),
+\end{equation}</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">C(p_j)</annotation></semantics></math>
+denotes the communication nodes dependent on substation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>j</mi></msub><annotation encoding="application/x-tex">p_j</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
+controls urgency sensitivity, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math>
+avoids numerical singularity. The optimal restoration target is selected
+as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>p</mi><mo>*</mo></msup><mo>=</mo><mrow><mi mathvariant="normal">arg</mi><mo>&#8289;</mo></mrow><msub><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><msub><mi>p</mi><mi>j</mi></msub></msub><mi>U</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>j</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p^{*} = \arg\max_{p_j} U(p_j,t)</annotation></semantics></math>.</p>
+<h3 id="dynamic-shortest-path-routing-and-restoration">Dynamic
+shortest-path routing and restoration</h3>
+<p>After selecting a restoration target, repair fleet
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mi>k</mi></msub><annotation encoding="application/x-tex">f_k</annotation></semantics></math>
+searches for the optimal route under the current road condition:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi mathvariant="normal">Π</mi><mi>k</mi><mo>*</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">arg</mi><mo>&#8289;</mo></mrow><munder><mi mathvariant="normal">min</mi><mi mathvariant="normal">Π</mi></munder><munder><mo>∑</mo><mrow><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo><mo>∈</mo><mi mathvariant="normal">Π</mi></mrow></munder><mi>L</mi><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:routing}
+\Pi_k^{*}(t) = \arg\min_{\Pi} \sum_{(u,v)\in\Pi} L(u,v,t),
+\end{equation}</annotation></semantics></math> solved with the Dijkstra
+algorithm. When the fleet reaches the failed power node at time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">v</mi><mi mathvariant="normal">e</mi></mrow></msub><annotation encoding="application/x-tex">t_{\mathrm{arrive}}</annotation></semantics></math>,
+the restoration action is activated,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>p</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>p</mi><mo>*</mo></msup><mo>,</mo><msub><mi>t</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">v</mi><mi mathvariant="normal">e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>→</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">S_p(p^{*}, t_{\mathrm{arrive}}) \rightarrow 1</annotation></semantics></math>,
+which immediately stops the battery depletion of its dependent
+communication nodes and prevents further cascading failure.</p>
+<h2 id="simulation-workflow">Simulation Workflow</h2>
+<p>The complete simulation process is summarized in Algorithm <a
+href="#alg:digital_twin" data-reference-type="ref"
+data-reference="alg:digital_twin">[alg:digital_twin]</a>. The system
+resilience indicator
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></msubsup><msub><mi>S</mi><mi>c</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi(t) = \frac{1}{N}\sum_{i=1}^{N} S_c(c_i,t)</annotation></semantics></math>
+tracks the fraction of operational communication nodes over time.</p>
+<div class="algorithm">
+<div class="algorithmic">
+<p>Initialize terrain elevation, drainage parameters, and infrastructure
+networks Update rainfall forcing Calculate CA-based flood propagation
+(Eq. <a href="#eq:update" data-reference-type="ref"
+data-reference="eq:update">[eq:update]</a>) Update drainage storage
+saturation (Eq. <a href="#eq:storage" data-reference-type="ref"
+data-reference="eq:storage">[eq:storage]</a>) Evaluate power
+infrastructure flooding damage (Eq. <a href="#eq:pfail"
+data-reference-type="ref" data-reference="eq:pfail">[eq:pfail]</a>)
+Update communication battery depletion (Eq. <a href="#eq:battery"
+data-reference-type="ref" data-reference="eq:battery">[eq:battery]</a>)
+Calculate system resilience indicator
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi(t)</annotation></semantics></math>
+Compute restoration priorities (Eq. <a href="#eq:utility"
+data-reference-type="ref" data-reference="eq:utility">[eq:utility]</a>)
+Update dynamic road accessibility (Eq. <a href="#eq:road"
+data-reference-type="ref" data-reference="eq:road">[eq:road]</a>)
+Generate optimal repair routes (Eq. <a href="#eq:routing"
+data-reference-type="ref" data-reference="eq:routing">[eq:routing]</a>)
+Execute restoration actions Output flood evolution and resilience
+trajectories</p>
+</div>
+</div>
+<h1 id="sec:case">Case Study and Experimental Design</h1>
+<h2 id="study-area">Study Area</h2>
+<p>To evaluate the effectiveness of the proposed digital twin framework,
+a case study was conducted in Miyazaki City, Japan. Miyazaki City is
+located on the southeastern coast of Kyushu Island and is frequently
+affected by typhoon-induced extreme precipitation events. The urban area
+is characterized by heterogeneous terrain conditions, including elevated
+mountainous regions in the west and relatively flat low-elevation plains
+near the Pacific coastline. The Oyodo River system crosses the urban
+area, creating complex surface runoff patterns and flood accumulation
+zones. The combination of mountainous runoff generation and
+low-elevation urban development makes Miyazaki City an appropriate
+testbed for evaluating terrain-driven flood dynamics and infrastructure
+resilience under extreme rainfall conditions.</p>
+<h2 id="digital-twin-environment-construction">Digital Twin Environment
+Construction</h2>
+<h3 id="terrain-and-hydrological-data">Terrain and hydrological
+data</h3>
+<p>The physical environment was reconstructed using high-resolution
+elevation data obtained from open geographic databases (Open-Meteo
+elevation API). The road network within a 3 km radius of the city center
+was extracted from OpenStreetMap <span class="citation"
+data-cites="haklay2008openstreetmap">[21]</span> and projected to the
+local coordinate system EPSG:6674 for accurate distance computation. The
+study region was discretized into a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>650</mn><mo>×</mo><mn>650</mn></mrow><annotation encoding="application/x-tex">650\times650</annotation></semantics></math>
+cell computational domain (422<span>,</span>500 hydrological cells),
+each containing elevation, surface water depth, drainage capacity, and
+subsurface storage state. The terrain field was processed using Gaussian
+smoothing to remove interpolation artifacts while preserving local
+elevation variations.</p>
+<h3 id="infrastructure-network-initialization">Infrastructure network
+initialization</h3>
+<p>Two critical infrastructure layers were constructed: a power supply
+network with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mn>15</mn></mrow><annotation encoding="application/x-tex">M=15</annotation></semantics></math>
+substations and a communication network with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">N=40</annotation></semantics></math>
+base stations. Dependency relationships were established according to
+network-based shortest-path distance rather than Euclidean distance,
+reflecting the practical characteristics of urban infrastructure
+connectivity <span class="citation"
+data-cites="rinaldi2001identifying">[2]</span>. Table <a
+href="#tab:data" data-reference-type="ref"
+data-reference="tab:data">1</a> summarizes the input datasets.</p>
+<table id="tab:data">
+<caption>Data sources used in the digital twin framework</caption>
+<thead>
+<tr>
+<th style="text-align: left;">Dataset</th>
+<th style="text-align: left;">Purpose</th>
+<th style="text-align: left;">Model component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Open-Meteo elevation API</td>
+<td style="text-align: left;">Terrain reconstruction and slope</td>
+<td style="text-align: left;">Flood model</td>
+</tr>
+<tr>
+<td style="text-align: left;">OpenStreetMap road network</td>
+<td style="text-align: left;">Topology and accessibility</td>
+<td style="text-align: left;">Network model</td>
+</tr>
+<tr>
+<td style="text-align: left;">Infrastructure deployment</td>
+<td style="text-align: left;">Component failure analysis</td>
+<td style="text-align: left;">Cascading failure model</td>
+</tr>
+<tr>
+<td style="text-align: left;">Synthetic rainfall scenario</td>
+<td style="text-align: left;">Hazard forcing</td>
+<td style="text-align: left;">Flood model</td>
+</tr>
+<tr>
+<td style="text-align: left;">Recovery parameters</td>
+<td style="text-align: left;">Emergency response</td>
+<td style="text-align: left;">Restoration optimization</td>
+</tr>
+</tbody>
+</table>
+<h2 id="extreme-rainfall-scenario">Extreme Rainfall Scenario</h2>
+<p>An extreme rainfall event lasting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">T=8</annotation></semantics></math> h
+was simulated. The rainfall input followed a modified Chicago design
+storm profile:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>R</mi><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi></mrow></msub><mo>+</mo><msub><mi>R</mi><mrow><mi mathvariant="normal">p</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">k</mi></mrow></msub><mrow><mi mathvariant="normal">sin</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>π</mi><mi>t</mi></mrow><mi>T</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\label{eq:rainfall}
+R(t) = R_{\mathrm{base}} + R_{\mathrm{peak}} \sin\!\left(\frac{\pi t}{T}\right),
+\end{equation}</annotation></semantics></math> with a peak intensity of
+100 mm/h and a cumulative precipitation of approximately 567 mm. The
+scenario represents a severe typhoon precipitation event comparable with
+historical extreme rainfall conditions in southern Japan. The time axis
+was discretized into 24 frames, each containing 30 CA sub-steps of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">\Delta t = 10</annotation></semantics></math> s.</p>
+<h2 id="simulation-parameters">Simulation Parameters</h2>
+<p>The main simulation parameters are summarized in Table <a
+href="#tab:parameters" data-reference-type="ref"
+data-reference="tab:parameters">2</a>.</p>
+<table id="tab:parameters">
+<caption>Main simulation parameters</caption>
+<thead>
+<tr>
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Spatial resolution</td>
+<td style="text-align: left;">Grid size</td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>650</mn><mo>×</mo><mn>650</mn></mrow><annotation encoding="application/x-tex">650\times650</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;">Flood model</td>
+<td style="text-align: left;">Cell number</td>
+<td style="text-align: left;">422<span>,</span>500</td>
+</tr>
+<tr>
+<td style="text-align: left;">Rainfall</td>
+<td style="text-align: left;">Duration</td>
+<td style="text-align: left;">8 h</td>
+</tr>
+<tr>
+<td style="text-align: left;">Rainfall</td>
+<td style="text-align: left;">Peak intensity</td>
+<td style="text-align: left;">100 mm/h</td>
+</tr>
+<tr>
+<td style="text-align: left;">Infrastructure</td>
+<td style="text-align: left;">Power substations</td>
+<td style="text-align: left;">15</td>
+</tr>
+<tr>
+<td style="text-align: left;">Infrastructure</td>
+<td style="text-align: left;">Communication stations</td>
+<td style="text-align: left;">40</td>
+</tr>
+<tr>
+<td style="text-align: left;">Flood threshold</td>
+<td style="text-align: left;">Substation damage threshold</td>
+<td style="text-align: left;">0.5 m</td>
+</tr>
+<tr>
+<td style="text-align: left;">Transportation</td>
+<td style="text-align: left;">Road blockage threshold</td>
+<td style="text-align: left;">0.3 m</td>
+</tr>
+<tr>
+<td style="text-align: left;">Battery</td>
+<td style="text-align: left;">Backup duration</td>
+<td style="text-align: left;">3–5 h</td>
+</tr>
+<tr>
+<td style="text-align: left;">Restoration</td>
+<td style="text-align: left;">Repair fleets</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Restoration</td>
+<td style="text-align: left;">Fleet speed</td>
+<td style="text-align: left;">30 km/h</td>
+</tr>
+<tr>
+<td style="text-align: left;">Restoration</td>
+<td style="text-align: left;">Repair time per substation</td>
+<td style="text-align: left;">1 h</td>
+</tr>
+</tbody>
+</table>
+<h2 id="experimental-scenarios-and-evaluation-metrics">Experimental
+Scenarios and Evaluation Metrics</h2>
+<p>Four experimental scenarios were designed to evaluate different
+capabilities of the proposed framework: <strong>S1</strong> normal
+rainfall condition (baseline for normal system behavior);
+<strong>S2</strong> extreme flood scenario (main scenario, evaluating
+flood propagation and infrastructure exposure); <strong>S3</strong>
+infrastructure cascading failure scenario (activating interdependency
+mechanisms); and <strong>S4</strong> adaptive restoration comparison
+(comparing adaptive restoration with static-flood and no-restoration
+baselines).</p>
+<p>Two baselines were defined for ablation analysis:</p>
+<ul>
+<li><p><strong>Baseline 1 (static bathtub flood).</strong> The CA flood
+model is replaced by a spatially uniform accumulation model in which the
+drainage coefficient is fixed at the median of the heterogeneous
+drainage field,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>D</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">D_{\mathrm{const}} = \mathrm{median}(D(i,j))</annotation></semantics></math>.
+This represents simplified flood assessment approaches that neglect
+heterogeneous terrain effects.</p></li>
+<li><p><strong>Baseline 2 (no restoration intervention).</strong> The
+proposed flood and cascading failure mechanisms are preserved, but
+emergency dispatch actions are removed
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">K=0</annotation></semantics></math>
+fleets); failed infrastructure remains unrecovered throughout the
+simulation.</p></li>
+</ul>
+<p>The performance of the framework is evaluated with four indicators:
+(i) flood extent and depth distribution, (ii) the resilience index
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi(t)</annotation></semantics></math>
+and its time integral (resilience area under the curve, AUC), (iii)
+recovery time (first time at which
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi(t)</annotation></semantics></math>
+returns to 95% of its initial value), and (iv) infrastructure
+availability curves
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>N</mi><mrow><mi mathvariant="normal">f</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mi>N</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">A(t) = N_{\mathrm{functional}}(t)/N_{\mathrm{total}}</annotation></semantics></math>.</p>
+<h1 id="sec:results">Results and Performance Evaluation</h1>
+<h2 id="study-area-and-infrastructure-deployment">Study Area and
+Infrastructure Deployment</h2>
+<p>Fig. <a href="#fig:studyarea" data-reference-type="ref"
+data-reference="fig:studyarea">1</a> shows the reconstructed terrain of
+the study area together with the OSM road network and the deployed
+infrastructure. The western mountainous region and the eastern coastal
+plain are clearly distinguished, providing a heterogeneous physical
+basis for flood propagation.</p>
+<figure id="fig:studyarea" data-latex-placement="H">
+<img src="figures/fig1_study_area.png" style="width:92.0%" />
+<figcaption>Study area (Miyazaki City): reconstructed terrain, road
+network, and deployed power substations (red squares) and communication
+base stations (cyan diamonds).</figcaption>
+</figure>
+<h2 id="nonlinear-flood-evolution-and-drainage-saturation">Nonlinear
+Flood Evolution and Drainage Saturation</h2>
+<p>The proposed CA flood simulation reveals a nonlinear flood evolution
+process caused by interactions among rainfall intensity, terrain
+characteristics, and drainage limitations. Fig. <a href="#fig:flood"
+data-reference-type="ref" data-reference="fig:flood">2</a> shows three
+snapshots of the flood depth field (early buffer stage, peak rainfall
+stage, and late recession stage), and the maximum flood depth trajectory
+is summarized in Table <a href="#tab:results" data-reference-type="ref"
+data-reference="tab:results">3</a>.</p>
+<figure id="fig:flood" data-latex-placement="H">
+<img src="figures/fig2_flood_evolution.png" style="width:95.0%" />
+<figcaption>Spatial evolution of flood depth at different simulation
+stages under the extreme rainfall scenario. Flooded substations are
+marked with black crosses, restored substations with green squares, and
+active substations with red squares.</figcaption>
+</figure>
+<h3 id="stage-i-hydrological-buffer-period">Stage I: hydrological buffer
+period</h3>
+<p>During the early rainfall period (approximately the first 2 h),
+surface water accumulation remained relatively limited: the maximum
+depth grew from 0 to about 1.5 m while drainage systems absorbed a large
+proportion of incoming water through available storage capacity. This
+indicates that urban drainage infrastructure provides a temporary
+resilience buffer before reaching saturation.</p>
+<h3 id="stage-ii-drainage-saturation-transition">Stage II: drainage
+saturation transition</h3>
+<p>As rainfall intensity approached its peak (between 2 and 4 h),
+subsurface storage capacity gradually decreased. When
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">K(i,j,t) \rightarrow 0</annotation></semantics></math>,
+drainage effectiveness declined significantly and the maximum depth
+accelerated from 2.8 m at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t=1</annotation></semantics></math> h
+to 12.6 m at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">t=4</annotation></semantics></math> h.
+The simulation demonstrates that flood growth is not proportional to
+rainfall input: once local drainage capacity is exhausted, additional
+precipitation rapidly converts into surface accumulation. This
+transition represents a critical hydrological tipping point, consistent
+with the nonlinear saturation mechanism described in Section <a
+href="#sec:method" data-reference-type="ref"
+data-reference="sec:method">3</a>.</p>
+<h3 id="stage-iii-rapid-surface-flood-expansion">Stage III: rapid
+surface flood expansion</h3>
+<p>After drainage saturation, flood propagation became dominated by
+surface hydraulic exchange, and the peak depth grew further to 16.59 m
+before slowly receding. Due to heterogeneous terrain, water
+preferentially accumulated in low-elevation regions and river-adjacent
+areas. Compared with the static flood approximation (Baseline 1), the
+proposed CA model captured stronger spatial concentration of flood
+depth, particularly in urban depressions.</p>
+<h2 id="comparison-with-the-static-flood-model">Comparison with the
+Static Flood Model</h2>
+<p>Table <a href="#tab:results" data-reference-type="ref"
+data-reference="tab:results">3</a> compares the main scenario with the
+two baselines. The static bathtub model (Baseline 1) produces a peak
+flood depth of only 0.48 m and fails to flood any substation, whereas
+the proposed terrain-informed CA model reaches a peak depth of 16.59 m
+and exposes up to three substations to flooding. The static
+approximation underestimates the peak depth by more than 97%, because it
+neglects terrain-driven accumulation in local depressions. This result
+indicates that spatially homogeneous flood assumptions may substantially
+underestimate localized infrastructure exposure, especially in
+heterogeneous urban environments.</p>
+<table id="tab:results">
+<caption>Summary metrics of the main scenario and baselines</caption>
+<thead>
+<tr>
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: center;">Peak depth (m)</th>
+<th style="text-align: center;">Flooded subst.<sup>a</sup></th>
+<th style="text-align: center;">Restored subst.<sup>b</sup></th>
+<th style="text-align: center;">Failed comm.<sup>a</sup></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Proposed framework</td>
+<td style="text-align: center;">16.59</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">Baseline 1 (static flood)</td>
+<td style="text-align: center;">0.48</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">Baseline 2 (no restoration)</td>
+<td style="text-align: center;">16.59</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">10</td>
+</tr>
+</tbody>
+</table>
+<p><sup>a</sup>Maximum simultaneous value over the simulation.
+<sup>b</sup>Total substations restored by the end of the simulation.</p>
+<h2 id="time-delayed-cascading-failure-analysis">Time-Delayed Cascading
+Failure Analysis</h2>
+<p>The interaction between physical flooding and infrastructure
+dependency generates a delayed cascading effect. In the main scenario
+the first substation is flooded at approximately
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">t=2</annotation></semantics></math> h;
+because of the backup-battery buffer, however, no communication station
+fails during the first 6 h of the event. The simulation shows three
+characteristic phases: (i) physical damage accumulation; (ii)
+battery-supported resilience buffering; and (iii) accelerated
+communication failure after battery depletion. In the no-restoration
+baseline the first communication failures emerge at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>≈</mo><mn>6.7</mn></mrow><annotation encoding="application/x-tex">t\approx 6.7</annotation></semantics></math> h
+and the number of failed stations grows to ten by the end of the event.
+This demonstrates that infrastructure resilience cannot be evaluated
+solely from immediate physical damage: temporal redundancy significantly
+influences the observed failure trajectory  <span class="citation"
+data-cites="ouyang2012time panteli2015grid">[11,15]</span>.</p>
+<h2 id="effectiveness-of-the-dynamic-restoration-strategy">Effectiveness
+of the Dynamic Restoration Strategy</h2>
+<p>The proposed restoration strategy was compared with the
+no-intervention scenario (Baseline 2). Fig. <a href="#fig:resilience"
+data-reference-type="ref" data-reference="fig:resilience">3</a> shows
+the resilience trajectories
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi(t)</annotation></semantics></math>
+of the three scenarios. Without restoration, the communication network
+degrades progressively as batteries deplete, reaching
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo>=</mo><mn>0.75</mn></mrow><annotation encoding="application/x-tex">\Phi = 0.75</annotation></semantics></math>
+with ten failed stations. With dynamic dispatch, both repair fleets
+restore two flooded substations within the first 3.3 h of the event,
+limiting communication failures to a single station and maintaining
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo>≥</mo><mn>0.975</mn></mrow><annotation encoding="application/x-tex">\Phi \ge 0.975</annotation></semantics></math>
+throughout; the resilience area under the curve improves from 0.951 to
+0.996. The results demonstrate that restoration timing and target
+selection strongly influence final system resilience.</p>
+<figure id="fig:resilience" data-latex-placement="H">
+<img src="figures/fig3_resilience_curves.png" style="width:88.0%" />
+<figcaption>Communication network resilience trajectories
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Phi(t)</annotation></semantics></math>
+of the proposed framework and the two baselines.</figcaption>
+</figure>
+<h2 id="sensitivity-analysis">Sensitivity Analysis</h2>
+<p>One-at-a-time sensitivity experiments were conducted to evaluate the
+influence of four key parameters: rainfall intensity, drainage capacity,
+backup-battery duration, and the number of repair fleets (Fig. <a
+href="#fig:sensitivity" data-reference-type="ref"
+data-reference="fig:sensitivity">4</a>).</p>
+<p>Rainfall intensity has a direct and significant effect on flood
+severity: increasing the peak intensity from 70 to 100 to 130 mm/h
+raises the peak flood depth from 15.14 to 16.59 to 19.91 m (an
+approximately 31% increase in depth for a 30% increase in rainfall at
+the highest level).</p>
+<p>The drainage-capacity experiments reveal an important saturation
+mechanism: once the subsurface storage is exhausted during the peak of
+the event, further increases in the drainage rate no longer reduce the
+peak water depth (16.59 m in all three configurations). This confirms
+that the storage-saturation tipping point, rather than the drainage rate
+itself, governs peak flooding under extreme rainfall.</p>
+<p>Backup-battery duration directly controls the delayed-cascade buffer:
+shortening the battery range to 1.5–2.5 h reduces the resilience AUC
+from 0.996 to 0.989, whereas extending it to 6–8 h completely prevents
+communication failures
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Φ</mi><mo>=</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">\Phi = 1.0</annotation></semantics></math>
+throughout). Finally, the repair-fleet experiments show that two fleets
+suffice to contain the damage scenario considered here, while a single
+fleet briefly exposes a second substation to flooding before it is
+repaired.</p>
+<p>The sensitivity analysis identifies rainfall intensity and
+backup-battery duration as the dominant factors controlling urban
+resilience performance under the simulated event, and provides
+quantitative support for resilience-oriented planning decisions.</p>
+<figure id="fig:sensitivity" data-latex-placement="H">
+<img src="figures/fig4_sensitivity.png" style="width:95.0%" />
+<figcaption>One-at-a-time sensitivity analysis: (a) rainfall intensity
+vs. peak flood depth; (b) drainage capacity vs. peak flood depth; (c)
+backup-battery duration vs. maximum failed communication stations; (d)
+number of repair fleets vs. maximum failed communication
+stations.</figcaption>
+</figure>
+<h2 id="summary-of-results">Summary of Results</h2>
+<p>The experimental results demonstrate that the proposed digital twin
+framework can simultaneously represent flood dynamics, infrastructure
+cascading failures, and adaptive recovery processes. The integration of
+physics-based simulation and decision optimization provides a
+comprehensive approach for evaluating urban resilience under extreme
+flooding scenarios.</p>
+<h1 id="sec:discussion">Discussion</h1>
+<p>The proposed digital twin framework provides a unified perspective
+for analyzing the interactions among environmental hazards,
+infrastructure interdependencies, and emergency responses. Unlike
+conventional resilience assessment approaches that primarily focus on
+static vulnerability evaluation, this study emphasizes the dynamic
+evolution of urban systems under extreme flooding conditions.</p>
+<h2 id="implications-for-urban-resilience-planning">Implications for
+Urban Resilience Planning</h2>
+<p>The simulation results highlight that urban resilience is determined
+not only by the physical robustness of infrastructure components but
+also by the temporal characteristics of failure propagation and recovery
+capability.</p>
+<p>First, the nonlinear transition caused by drainage saturation
+indicates that flood resilience cannot be evaluated solely according to
+rainfall intensity or static elevation information. Urban drainage
+capacity, terrain heterogeneity, and local water accumulation processes
+should be incorporated into resilience-oriented planning <span
+class="citation"
+data-cites="bates2010simple guidolin2016weighted">[12,13]</span>.</p>
+<p>Second, the time-delayed cascading failure mechanism demonstrates the
+importance of operational redundancy. Backup energy systems, such as
+batteries and distributed power resources, can significantly extend the
+functional lifetime of dependent infrastructure after primary failures
+occur <span class="citation" data-cites="panteli2015grid">[15]</span>.
+However, such redundancy should be regarded as a temporary resilience
+buffer rather than a permanent solution: in our simulations the delayed
+failure merely postpones, but does not eliminate, the collapse of
+dependent networks.</p>
+<p>Third, the restoration simulation indicates that emergency response
+efficiency depends on both infrastructure priority and transportation
+accessibility <span class="citation"
+data-cites="laporte2009fifty">[19]</span>. Conventional disaster
+response strategies based on static geographic distance may become
+ineffective when transportation networks are dynamically disrupted by
+flooding. Therefore, future smart-city emergency systems should
+integrate real-time environmental sensing, digital twins, and adaptive
+optimization algorithms  <span class="citation"
+data-cites="batty2018digital tao2019digital">[16,18]</span>.</p>
+<h2
+id="contribution-to-digital-twin-based-disaster-management">Contribution
+to Digital Twin-Based Disaster Management</h2>
+<p>Digital twins have increasingly been applied in smart-city
+management; however, many existing implementations focus on monitoring
+and visualization rather than predictive resilience analysis <span
+class="citation"
+data-cites="grieves2017digital batty2018digital">[16,17]</span>. The
+proposed framework extends the concept of digital twins by introducing
+three capabilities: (i) physics-informed environmental evolution, (ii)
+multi-layer infrastructure failure simulation, and (iii) closed-loop
+human intervention modeling. This enables the digital twin to function
+not only as a passive monitoring platform but also as a decision-support
+system for disaster mitigation and recovery.</p>
+<h2 id="model-limitations-and-future-work">Model Limitations and Future
+Work</h2>
+<p>Although the proposed framework improves the representation of
+flood-induced infrastructure failures, several limitations remain.</p>
+<h3 id="hydrodynamic-approximation">Hydrodynamic approximation</h3>
+<p>The CA-based flood model provides computational efficiency for
+large-scale simulations, but it does not fully reproduce all physical
+processes described by high-fidelity shallow water equations. In
+particular, momentum conservation, turbulence effects, and complex urban
+obstacles are simplified. Furthermore, the conservative CFL parameter
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.12</mn></mrow><annotation encoding="application/x-tex">\alpha = 0.12</annotation></semantics></math>)
+limits surface flow propagation speed, so the reported absolute times
+represent model time rather than real physical time; the study focuses
+on relative timing and the shape of the transitions rather than exact
+arrival-time forecasts. Future research may integrate adaptive mesh
+refinement, adaptive time stepping, or hybrid CA–SWE approaches to
+improve physical accuracy while maintaining computational
+efficiency <span class="citation"
+data-cites="bates2010simple">[12]</span>.</p>
+<h3 id="infrastructure-representation">Infrastructure
+representation</h3>
+<p>The current model focuses on power and communication dependencies.
+However, real urban systems contain additional interacting layers,
+including transportation, water supply, healthcare, and emergency
+services. Future studies should extend the framework toward multi-layer
+infrastructure networks and incorporate distributed energy resources
+with self-healing islanding capabilities <span class="citation"
+data-cites="ouyang2014review">[5]</span>.</p>
+<h3 id="parameter-calibration-and-validation">Parameter calibration and
+validation</h3>
+<p>The current simulation relies on parameter settings derived from
+engineering assumptions and available geographic information. Further
+validation using historical flood observations, sensor measurements, and
+infrastructure failure records is required to improve predictive
+capability. Quantitative validation metrics such as Intersection over
+Union (IoU) between simulated and observed inundation areas should be
+applied when observational data become available.</p>
+<h3 id="human-decision-modeling">Human decision modeling</h3>
+<p>The emergency dispatch strategy is represented through algorithmic
+optimization. However, real disaster response also involves human
+decision-making, resource constraints, and institutional coordination
+ <span class="citation" data-cites="dibaldassarre2013socio">[20]</span>.
+Future work could incorporate agent-based models to represent more
+realistic emergency management behaviors.</p>
+<h1 id="sec:conclusion">Conclusion</h1>
+<p>This study proposed a high-resolution digital twin framework for
+evaluating urban infrastructure resilience under extreme flooding
+scenarios. By integrating terrain-informed cellular automata flood
+propagation, time-delayed cascading failure mechanisms, and dynamic
+restoration optimization, the proposed framework provides a unified
+approach for simulating the complete disaster-response process from
+hazard evolution to infrastructure recovery.</p>
+<p>The main findings are summarized as follows:</p>
+<ol>
+<li><p><strong>Flood evolution exhibits nonlinear transition
+behavior.</strong> The interaction between rainfall input, heterogeneous
+terrain, and drainage saturation produces critical transition points
+where urban flooding rapidly changes from a manageable condition to
+severe surface accumulation.</p></li>
+<li><p><strong>Temporal redundancy strongly influences cascading failure
+dynamics.</strong> Backup energy systems introduce a delay between
+physical infrastructure damage and functional service disruption.
+Ignoring this temporal mechanism may lead to inaccurate estimation of
+infrastructure resilience.</p></li>
+<li><p><strong>Adaptive restoration improves system-level
+resilience.</strong> Dynamic dispatch strategies considering both
+infrastructure importance and flood-constrained accessibility can
+effectively reduce cascading impacts and improve recovery outcomes under
+limited emergency resources.</p></li>
+</ol>
+<p>From a methodological perspective, the framework bridges physical
+flood dynamics, infrastructure dependency modeling, and recovery
+optimization within a unified computational environment. From a
+practical perspective, it provides evidence-based support for urban
+resilience planning by identifying critical infrastructure
+vulnerabilities, evaluating cascading impacts, and testing adaptive
+intervention strategies. Overall, this research demonstrates the
+potential of high-resolution digital twins as a foundation for future
+intelligent disaster management systems that combine physical
+simulation, network science, and adaptive decision-making.</p>
+<h1 class="unnumbered" id="acknowledgements">Acknowledgements</h1>
+<p>The authors declare that this research received no specific grant
+from any funding agency in the public, commercial, or not-for-profit
+sectors. The authors thank the open-data communities of OpenStreetMap
+and Open-Meteo for providing the geographic and elevation data used in
+this study.</p>
+<h1 class="unnumbered" id="data-availability">Data Availability</h1>
+<p>The input data used in this study are derived from publicly available
+third-party sources: the road network of Miyazaki City was obtained from
+OpenStreetMap (OSM, <a href="https://www.openstreetmap.org"
+class="uri">https://www.openstreetmap.org</a>), and terrain elevation
+data were retrieved from the Open-Meteo elevation API (<a
+href="https://open-meteo.com" class="uri">https://open-meteo.com</a>).
+No proprietary or confidential data were used.</p>
+<p>The complete simulation framework, including the terrain-informed
+cellular flood model, the interdependent infrastructure failure model,
+the adaptive restoration optimizer, and the visualization modules, is
+implemented in Python. All source code, configuration files, cached
+input data, and the full set of experimental outputs (frame-wise
+simulation trajectories, summary metrics, and figure-generation scripts)
+are publicly available in the repository <a
+href="https://github.com/mozhu-cn/urban-resilience-digital-twin"
+class="uri">https://github.com/mozhu-cn/urban-resilience-digital-twin</a>.
+The entire experimental pipeline, including the main scenario, the two
+baseline scenarios, and the one-at-a-time sensitivity analysis, is fully
+reproducible by executing the provided scripts with the released code
+and data.</p>
+<div id="refs" class="references csl-bib-body" data-entry-spacing="0"
+role="list">
+<div id="ref-ipcc2012srex" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[1] </div><div
+class="csl-right-inline">IPCC, Managing the risks of extreme events and
+disasters to advance climate change adaptation: Special report of the
+intergovernmental panel on climate change, Cambridge University Press,
+Cambridge, UK; New York, NY, USA, 2012. https://doi.org/<a
+href="https://doi.org/10.1017/CBO9781139177245">10.1017/CBO9781139177245</a>.</div>
+</div>
+<div id="ref-rinaldi2001identifying" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[2] </div><div
+class="csl-right-inline">S.M. Rinaldi, J.P. Peerenboom, T.K. Kelly,
+Identifying, understanding, and analyzing critical infrastructure
+interdependencies, IEEE Control Systems Magazine 21 (2001) 11–25.
+https://doi.org/<a
+href="https://doi.org/10.1109/37.969131">10.1109/37.969131</a>.</div>
+</div>
+<div id="ref-buldyrev2010catastrophic" class="csl-entry"
+role="listitem">
+<div class="csl-left-margin">[3] </div><div
+class="csl-right-inline">S.V. Buldyrev, R. Parshani, G. Paul, H.E.
+Stanley, S. Havlin, Catastrophic cascade of failures in interdependent
+networks, Nature 464 (2010) 1025–1028. https://doi.org/<a
+href="https://doi.org/10.1038/nature08932">10.1038/nature08932</a>.</div>
+</div>
+<div id="ref-gao2011robustness" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">J.
+Gao, S.V. Buldyrev, S. Havlin, H.E. Stanley, Robustness of a network of
+networks, Physical Review Letters 107 (2011) 195701. https://doi.org/<a
+href="https://doi.org/10.1103/PhysRevLett.107.195701">10.1103/PhysRevLett.107.195701</a>.</div>
+</div>
+<div id="ref-ouyang2014review" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">M.
+Ouyang, Review on modeling and simulation of interdependent critical
+infrastructure systems, Reliability Engineering &amp; System Safety 121
+(2014) 43–60. https://doi.org/<a
+href="https://doi.org/10.1016/j.ress.2013.06.040">10.1016/j.ress.2013.06.040</a>.</div>
+</div>
+<div id="ref-ouyang2012three" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline">M.
+Ouyang, L. Dueñas-Osorio, X. Min, A three-stage resilience analysis
+framework for urban infrastructure systems, Structural Safety 36–37
+(2012) 23–31. https://doi.org/<a
+href="https://doi.org/10.1016/j.strusafe.2011.12.004">10.1016/j.strusafe.2011.12.004</a>.</div>
+</div>
+<div id="ref-bruneau2003framework" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">M.
+Bruneau, S.E. Chang, R.T. Eguchi, G.C. Lee, T.D. O’Rourke, A.M.
+Reinhorn, M. Shinozuka, K. Tierney, W.A. Wallace, D. von Winterfeldt, A
+framework to quantitatively assess and enhance the seismic resilience of
+communities, Earthquake Spectra 19 (2003) 733–752. https://doi.org/<a
+href="https://doi.org/10.1193/1.1623497">10.1193/1.1623497</a>.</div>
+</div>
+<div id="ref-chang2004measuring" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[8] </div><div
+class="csl-right-inline">S.E. Chang, M. Shinozuka, Measuring
+improvements in the disaster resilience of communities, Earthquake
+Spectra 20 (2004) 739–755. https://doi.org/<a
+href="https://doi.org/10.1193/1.1775796">10.1193/1.1775796</a>.</div>
+</div>
+<div id="ref-albert2002statistical" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">R.
+Albert, A.-L. Barabási, Statistical mechanics of complex networks,
+Reviews of Modern Physics 74 (2002) 47–97. https://doi.org/<a
+href="https://doi.org/10.1103/RevModPhys.74.47">10.1103/RevModPhys.74.47</a>.</div>
+</div>
+<div id="ref-newman2003structure" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[10] </div><div
+class="csl-right-inline">M.E.J. Newman, The structure and function of
+complex networks, SIAM Review 45 (2003) 167–256. https://doi.org/<a
+href="https://doi.org/10.1137/S003614450342480">10.1137/S003614450342480</a>.</div>
+</div>
+<div id="ref-ouyang2012time" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">M.
+Ouyang, L. Dueñas-Osorio, Time-dependent resilience assessment and
+improvement of urban infrastructure systems, Chaos: An Interdisciplinary
+Journal of Nonlinear Science 22 (2012) 033122. https://doi.org/<a
+href="https://doi.org/10.1063/1.4737204">10.1063/1.4737204</a>.</div>
+</div>
+<div id="ref-bates2010simple" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[12] </div><div
+class="csl-right-inline">P.D. Bates, M.S. Horritt, T.J. Fewtrell, A
+simple inertial formulation of the shallow water equations for efficient
+two-dimensional flood inundation modelling, Journal of Hydrology 387
+(2010) 33–45. https://doi.org/<a
+href="https://doi.org/10.1016/j.jhydrol.2010.03.027">10.1016/j.jhydrol.2010.03.027</a>.</div>
+</div>
+<div id="ref-guidolin2016weighted" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">M.
+Guidolin, A.S. Chen, B. Ghimire, E.C. Keedwell, S. Djordjević, D.A.
+Savić, A weighted cellular automata 2<span>D</span> inundation model for
+rapid flood analysis, Environmental Modelling &amp; Software 84 (2016)
+378–394. https://doi.org/<a
+href="https://doi.org/10.1016/j.envsoft.2016.07.008">10.1016/j.envsoft.2016.07.008</a>.</div>
+</div>
+<div id="ref-ghimire2013formulation" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[14] </div><div class="csl-right-inline">B.
+Ghimire, A.S. Chen, M. Guidolin, E.C. Keedwell, S. Djordjević, D.A.
+Savić, Formulation of a fast 2<span>D</span> urban pluvial flood model
+using a cellular automata approach, Journal of Hydroinformatics 15
+(2013) 676–686. https://doi.org/<a
+href="https://doi.org/10.2166/hydro.2012.245">10.2166/hydro.2012.245</a>.</div>
+</div>
+<div id="ref-panteli2015grid" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[15] </div><div class="csl-right-inline">M.
+Panteli, P. Mancarella, The <span>Grid</span>: Stronger, bigger,
+smarter? Presenting a conceptual framework of power system resilience,
+IEEE Power and Energy Magazine 13 (2015) 58–66. https://doi.org/<a
+href="https://doi.org/10.1109/MPE.2015.2397334">10.1109/MPE.2015.2397334</a>.</div>
+</div>
+<div id="ref-batty2018digital" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[16] </div><div class="csl-right-inline">M.
+Batty, Digital twins, Environment and Planning B: Urban Analytics and
+City Science 45 (2018) 817–820. https://doi.org/<a
+href="https://doi.org/10.1177/2399808318796416">10.1177/2399808318796416</a>.</div>
+</div>
+<div id="ref-grieves2017digital" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[17] </div><div class="csl-right-inline">M.
+Grieves, J. Vickers, Digital twin: Mitigating unpredictable, undesirable
+emergent behavior in complex systems, in: Transdisciplinary Perspectives
+on Complex Systems, Springer International Publishing, 2017: pp. 85–113.
+https://doi.org/<a
+href="https://doi.org/10.1007/978-3-319-38756-7_4">10.1007/978-3-319-38756-7_4</a>.</div>
+</div>
+<div id="ref-tao2019digital" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[18] </div><div class="csl-right-inline">F.
+Tao, H. Zhang, A. Liu, A.Y.C. Nee, Digital twin in industry:
+State-of-the-art, IEEE Transactions on Industrial Informatics 15 (2019)
+2405–2415. https://doi.org/<a
+href="https://doi.org/10.1109/TII.2018.2873186">10.1109/TII.2018.2873186</a>.</div>
+</div>
+<div id="ref-laporte2009fifty" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[19] </div><div class="csl-right-inline">G.
+Laporte, Fifty years of vehicle routing, Transportation Science 43
+(2009) 408–416. https://doi.org/<a
+href="https://doi.org/10.1287/trsc.1090.0301">10.1287/trsc.1090.0301</a>.</div>
+</div>
+<div id="ref-dibaldassarre2013socio" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[20] </div><div class="csl-right-inline">G.
+Di Baldassarre, A. Viglione, G. Carr, L. Kuil, J.L. Salinas, G. Blöschl,
+Socio-hydrology: Conceptualising human-flood interactions, Hydrology and
+Earth System Sciences 17 (2013) 3295–3303. https://doi.org/<a
+href="https://doi.org/10.5194/hess-17-3295-2013">10.5194/hess-17-3295-2013</a>.</div>
+</div>
+<div id="ref-haklay2008openstreetmap" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[21] </div><div class="csl-right-inline">M.
+Haklay, P. Weber, <span>OpenStreetMap</span>: User-generated street
+maps, IEEE Pervasive Computing 7 (2008) 12–18. https://doi.org/<a
+href="https://doi.org/10.1109/MPRV.2008.80">10.1109/MPRV.2008.80</a>.</div>
+</div>
+<div id="ref-issermann2020efficient" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[22] </div><div class="csl-right-inline">M.
+Issermann, F.-J. Chang, H. Jia, Efficient urban inundation model for
+live flood forecasting with cellular automata and motion cost fields,
+Water 12 (2020) 1997. https://doi.org/<a
+href="https://doi.org/10.3390/w12071997">10.3390/w12071997</a>.</div>
+</div>
+<div id="ref-holling1973resilience" class="csl-entry" role="listitem">
+<div class="csl-left-margin">[23] </div><div
+class="csl-right-inline">C.S. Holling, Resilience and stability of
+ecological systems, Annual Review of Ecology and Systematics 4 (1973)
+1–23. https://doi.org/<a
+href="https://doi.org/10.1146/annurev.es.04.110173.000245">10.1146/annurev.es.04.110173.000245</a>.</div>
+</div>
+</div>

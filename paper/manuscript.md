@@ -1,7 +1,9 @@
 # A Physics-Guided Digital Twin Framework for Urban Infrastructure Resilience Assessment under Extreme Flooding: Integrating Terrain-Informed Flood Simulation, Delayed Cascading Failures, and Adaptive Restoration
 
 **Authors:** Zheyu Huang\*, Yujia Huang
-(\*Corresponding author: shuimoqingzhu-cn@qq.com)
+(\*Corresponding author: shuimoqingzhu-cn@qq.com; Independent Researcher, China)
+
+**Journal:** International Journal of Disaster Risk Reduction (IJDRR)
 
 ---
 
